@@ -13,21 +13,24 @@ class ViewController: UIViewController {
     //Setup the UI to contain two labels
     let headerLabel = UILabel()
     let flavorTextLabel = UILabel()
+    var labelsStackView = UIStackView()
     
     fileprivate func setupLabels() {
         //label properties
         headerLabel.font = UIFont(name: "Futura", size: 40)
         headerLabel.numberOfLines = 0
         headerLabel.text = "Welcome to my application!"
+        headerLabel.tag = 0
         
         flavorTextLabel.font = UIFont(name: "Futura", size: 24)
         flavorTextLabel.numberOfLines = 0
         flavorTextLabel.text = "If you're able to read this then I was able to code this properly. Hooray for base-level competence! Coming soon to an app store near you, of course."
+        flavorTextLabel.tag = 1
     }
     
     fileprivate func setupStackView() {
         //create a stackview to hold the UI elements
-        let labelsStackView = UIStackView(arrangedSubviews: [headerLabel, flavorTextLabel])
+        labelsStackView = UIStackView(arrangedSubviews: [headerLabel, flavorTextLabel])
         labelsStackView.axis = .vertical
         labelsStackView.spacing = 8
         view.addSubview(labelsStackView) //needs to be placed BEFORE constraints added
@@ -43,39 +46,29 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setupLabels()
         setupStackView()
-        //funAnimations()
         
         //click anywhere in the view
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(funAnimations)))
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(funAnimation)))
     }
     
-    @objc func funAnimations(gesture: UITapGestureRecognizer) {
+    @objc func funAnimation() {
         //making a chain by translating to the left, then translating to the top
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: {
-            
-            self.headerLabel.transform = CGAffineTransform(translationX: -30, y: 0)
-            
-        }) { (_) in
-            //our second animation
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                
-                self.headerLabel.alpha = 0 //fade the label out
-                self.headerLabel.transform = self.headerLabel.transform.translatedBy(x: 0, y: -200)
-            })
-        }
+        var delay = 0.5
         
-        //obviously needs a refactor - flavorTextLabel
-        UIView.animate(withDuration: 0.5, delay: 0.5, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: {
+        labelsStackView.arrangedSubviews.forEach { (subview) in
+            if subview.tag != 0 {
+                delay += 0.5 //should be a delay of 0.0 for the inital call
+            }
             
-            self.flavorTextLabel.transform = CGAffineTransform(translationX: -30, y: 0)
-            
-        }) { (_) in
-            //our second animation
-            UIView.animate(withDuration: 0.5, delay: 0.5, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
-                
-                self.flavorTextLabel.alpha = 0 //fade the label out
-                self.flavorTextLabel.transform = self.flavorTextLabel.transform.translatedBy(x: 0, y: -200)
-            })
+            UIView.animate(withDuration: 1.5, delay: delay, usingSpringWithDamping: 0.75, initialSpringVelocity: 0.75, options: .curveEaseOut, animations: {
+                subview.transform = CGAffineTransform(translationX: -30, y: 0)
+                subview.transform = subview.transform.translatedBy(x: 0, y: -200)
+            }) { (_) in
+                //subview.alpha = 0
+                UIView.animate(withDuration: 0.5, animations: {
+                    subview.alpha = 0
+                })
+            }
         }
     }
 
